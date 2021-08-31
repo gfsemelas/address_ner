@@ -1,4 +1,5 @@
 from pandas import read_csv, DataFrame
+from zipfile import ZipFile
 from addressner.sources.cleaning import cleaning
 from tqdm import tqdm
 from json import load as json_load
@@ -10,8 +11,10 @@ from addressner.sources.address_labelling import address_labelling
 # Load the data. The csv separator is "μ" (\u03bc)
 header = ['CLIENT_ID', 'ADDRESS', 'POSTALCODE', 'CITY', 'STATE', 'COUNTRY']
 n_rows = 88000
-df = read_csv('../Data/20210311_GBOGL_Addresses.csv',
+zf = ZipFile('../Data/20210311_GBOGL_Addresses.zip')
+df = read_csv(zf.open('20210311_GBOGL_Addresses.csv'),
               sep='\u03bc', header=None, names=header, engine='python', nrows=n_rows*1.25)
+zf.close()
 
 # Drop 'NaN's in 'ADDRESS' column and preserve only the records that were labelled with Azure Maps
 df.dropna(subset=['ADDRESS'], inplace=True)
